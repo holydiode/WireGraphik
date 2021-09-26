@@ -7,7 +7,7 @@ namespace WireGraphik
 {
     class Matrix : List<List<double>>
     {
-
+        public Matrix() : base() { }
         public int Height => this.Count;
         public int Width => Height > 0 ? this[0].Count : 0 ;
 
@@ -27,9 +27,10 @@ namespace WireGraphik
         public static implicit operator string(Matrix value)
         {
             string m = "";
-            for (int i = 0; i < value.Height; i++)
+
+            for (int j = 0; j < value.Width; j++)
             {
-                for (int j = 0; j < value.Width; j++)
+                for (int i = 0; i < value.Height; i++)
                 {
                     m += value[i, j] + " ";
                 }
@@ -58,6 +59,24 @@ namespace WireGraphik
 
             return c;
         }
+        
+        public static Matrix operator *(Matrix a, float b)
+        {
+            Matrix newMatrix = new Matrix();
+            for(int i = 0; i < a.Height; i++)
+            {
+                for(int j = 0; j< a.Width; j++)
+                {
+                    newMatrix[i, j] = a[i, j] * b;
+                }
+            }
+            return newMatrix;
+        }
+
+        public static Matrix operator *( float b, Matrix a)
+        {
+            return a * b;
+        }
 
         public double this[int firstIndex, int secondIndex]
         {
@@ -70,30 +89,57 @@ namespace WireGraphik
             {
                 foreach(List<double> str in this)
                 {
-                    while(str.Count <= firstIndex)
+                    while(str.Count <= secondIndex)
                     {
                         str.Add(0);
                     }
                 }
 
-                while (Height <= secondIndex)
+
+                while (Height <= firstIndex)
                 {
                     this.Add(new List<double>());
-                    int wight = Width < firstIndex ? firstIndex : Width;
+                    int wight = Width - 1 < secondIndex ? secondIndex : Width - 1;
+
+
+
                     for (int i = 0; i <= wight; i++)
                     {
                         this[Height - 1].Add(0);
                     }
                 }
-                this[secondIndex][firstIndex] = value;
+                this[firstIndex][secondIndex] = value;
             }
         }
+        public static Matrix Move3DMatrix(float x, float y, float z)
+        {
+            Matrix matrix = new Matrix();
+
+            for(int i =0; i < 4; i++)
+            {
+                matrix[i, i] = 1;
+            }
+            matrix[3, 0] = x;
+            matrix[3, 0] = y;
+            matrix[3, 0] = z;
+
+            return matrix;
+        }
+
+
 
     }
 
     class Point : Matrix
     {
-        public Point(double X, double Y, double Z, double h = 1)
+        public Point() : base() { }
+
+        public Point(Matrix matrix):base()
+        {
+            this.AddRange(matrix);
+        }
+
+        public Point(double X, double Y, double Z, double h = 1):base()
         {
             this[0, 0] = X / h;
             this[0, 1] = Y / h;
@@ -101,7 +147,7 @@ namespace WireGraphik
             this[0, 3] = h;
         }
 
-        public double h
+        public double H
         {
             get
             {
@@ -110,8 +156,8 @@ namespace WireGraphik
             set
             {
                 for (int i = 0; i < 3; i++)
-                    this[0, i] *= value / this.h;
-                this[0, 3] = h;
+                    this[0, i] *= value / this.H;
+                this[0, 3] = H;
             }
 
         }
@@ -120,35 +166,57 @@ namespace WireGraphik
         {
             get
             {
-                return this[0, 0] * h;
+                return this[0, 0] * H;
             }
             set
             {
-                this[0, 0] = value / h;
+                this[0, 0] = value / H;
             }
         }
         public double Y
         {
             get
             {
-                return this[0, 1] * h;
+                return this[0, 1] * H;
             }
             set
             {
-                this[0, 1] = value / h;
+                this[0, 1] = value / H;
             }
         }
         public double Z
         {
             get
             {
-                return this[0, 2] * h;
+                return this[0, 2] * H;
             }
             set
             {
-                this[0, 2] = value / h;
+                this[0, 2] = value / H;
             }
         }
+
+        public static Point operator *(Point a, Matrix b)
+        {
+            return new Point(((Matrix)a * b));
+        }
+
+        public static Point operator *( Matrix b, Point a)
+        {
+            return b * a;
+        }
+
+        public static Point operator *(Point a, float b)
+        {
+            return new Point((Matrix)a * b);
+        }
+
+        public static Point operator *(float b, Point a)
+        {
+            return a * b;
+        }
+
+
 
     }
 
