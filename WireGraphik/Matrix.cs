@@ -27,10 +27,11 @@ namespace WireGraphik
         public static implicit operator string(Matrix value)
         {
             string m = "";
-
-            for (int j = 0; j < value.Width; j++)
+            for (int i = 0; i < value.Height; i++)
             {
-                for (int i = 0; i < value.Height; i++)
+
+
+                for (int j = 0; j < value.Width; j++)
                 {
                     m += value[i, j] + " ";
                 }
@@ -40,18 +41,18 @@ namespace WireGraphik
         }
         public static Matrix operator *(Matrix a, Matrix b)
         {
-            if(a.Width != b.Height)
+            if( a.Height != b.Width)
                 throw new Exception("Матрицы невозможно перемножить");
 
             Matrix c = new();
-            for(int i = 0; i < a.Height; i++)
+            for(int i = 0; i < a.Width; i++)
             {
-                for(int j = 0; j< b.Width; j++)
+                for(int j = 0; j< b.Height; j++)
                 {
                     double val = 0;
-                    for (int k = 0; k < a.Width; k++)
+                    for (int k = 0; k < a.Height; k++)
                     {
-                        val += a[i, k] * b[k, j];
+                        val += a[k, i] * b[j, k];
                     }
                     c[j, i] = val;
                 }
@@ -76,6 +77,19 @@ namespace WireGraphik
         public static Matrix operator *( float b, Matrix a)
         {
             return a * b;
+        }
+
+        public static Matrix operator +(Matrix a, Matrix b)
+        {
+            Matrix matrix = new Matrix();
+            for(int i = 0; i < a.Height; i++)
+            {
+                for(int j = 0; j < a.Width; j++)
+                {
+                    matrix[i, j] = a[i, j] + b[i, j];
+                }
+            }
+            return matrix;
         }
 
         public double this[int firstIndex, int secondIndex]
@@ -120,13 +134,81 @@ namespace WireGraphik
                 matrix[i, i] = 1;
             }
             matrix[3, 0] = x;
-            matrix[3, 0] = y;
-            matrix[3, 0] = z;
+            matrix[3, 1] = y;
+            matrix[3, 2] = z;
 
             return matrix;
         }
 
+        public static Matrix Totate3DMatrixX(float phi)
+        {
+            Matrix matrix = new Matrix();
+            matrix[0, 0] = 1;
+            matrix[1, 1] = Math.Cos(phi);
+            matrix[1, 2] = Math.Sin(phi);
+            matrix[2, 1] = -Math.Sin(phi);
+            matrix[2, 2] = Math.Cos(phi);
+            matrix[3, 3] = 1;
+            return matrix;
+        }
 
+        public static Matrix Totate3DMatrixY(float phi)
+        {
+            Matrix matrix = new Matrix();
+            matrix[0, 0] = Math.Cos(phi);
+            matrix[0, 2] = -Math.Sin(phi);
+            matrix[1, 1] = 1;
+            matrix[2, 0] = Math.Sin(phi);
+            matrix[2, 2] = Math.Cos(phi);
+            matrix[3, 3] = 1;
+            return matrix;
+        }
+
+        public static Matrix Totate3DMatrixZ(float phi)
+        {
+            Matrix matrix = new Matrix();
+            matrix[0, 0] = Math.Cos(phi);
+            matrix[0, 1] = Math.Sin(phi);
+            matrix[1, 0] = -Math.Sin(phi);
+            matrix[1, 1] = Math.Cos(phi);
+            matrix[2, 2] = 1;
+            matrix[3, 3] = 1;
+            return matrix;
+        }
+
+        public static Matrix ProectionMatrix()
+        {
+            Matrix matrix = new Matrix();
+            matrix[0, 0] = 1;
+            matrix[1, 1] = 1;
+            matrix[2, 0] = -Math.Sqrt(2) / 4;
+            matrix[2, 1] = -Math.Sqrt(2) / 4;
+            matrix[3, 3] = 1;
+            return matrix;
+        }
+
+        public static Matrix MirorMatrix(bool x, bool y, bool z)
+        {
+            Matrix matrix = new Matrix();
+            matrix[0, 0] = x ? -1: 1; 
+            matrix[1, 1] = y ? -1: 1; 
+            matrix[2, 2] = z ? -1: 1; 
+            matrix[3, 3] = 1; 
+
+            return matrix;
+
+        }
+
+        public static Matrix ScaleMatrix(float x, float y, float z)
+        {
+            Matrix matrix = new Matrix();
+            matrix[0, 0] = x;
+            matrix[1, 1] = y;
+            matrix[2, 2] = z;
+            matrix[3, 3] = 1;
+
+            return matrix;
+        }
 
     }
 
@@ -161,7 +243,6 @@ namespace WireGraphik
             }
 
         }
-
         public double X
         {
             get
@@ -198,17 +279,19 @@ namespace WireGraphik
 
         public static Point operator *(Point a, Matrix b)
         {
-            return new Point(((Matrix)a * b));
+            return new Point((Matrix)a * b);
         }
 
         public static Point operator *( Matrix b, Point a)
         {
-            return b * a;
+            return new Point((b * (Matrix)a));
         }
 
         public static Point operator *(Point a, float b)
         {
-            return new Point((Matrix)a * b);
+            Point point = new Point((Matrix)a * b);
+            point[0, 3] = a.H;
+            return point;
         }
 
         public static Point operator *(float b, Point a)
@@ -216,8 +299,12 @@ namespace WireGraphik
             return a * b;
         }
 
-
-
+        public static Point operator +(Point a, Point b)
+        {
+            Point point = new Point((Matrix)a + (Matrix)b);
+            point[0, 3] = a.H;
+            return  point;
+        }
     }
 
 }
