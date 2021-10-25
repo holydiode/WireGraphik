@@ -8,6 +8,11 @@ namespace WireGraphik
     class Matrix : List<List<double>>
     {
         public Matrix() : base() { }
+
+        public Matrix(List<List<double>> list):base(list)
+        {
+
+        }
         public int Height => this.Count;
         public int Width => Height > 0 ? this[0].Count : 0 ;
 
@@ -60,8 +65,7 @@ namespace WireGraphik
 
             return c;
         }
-        
-        public static Matrix operator *(Matrix a, float b)
+        public static Matrix operator *(Matrix a, double b)
         {
             Matrix newMatrix = new Matrix();
             for(int i = 0; i < a.Height; i++)
@@ -74,7 +78,7 @@ namespace WireGraphik
             return newMatrix;
         }
 
-        public static Matrix operator *( float b, Matrix a)
+        public static Matrix operator *(double b, Matrix a)
         {
             return a * b;
         }
@@ -125,7 +129,7 @@ namespace WireGraphik
                 this[firstIndex][secondIndex] = value;
             }
         }
-        public static Matrix Move3DMatrix(float x, float y, float z)
+        public static Matrix Move3DMatrix(double x, double y, double z)
         {
             Matrix matrix = new Matrix();
 
@@ -140,7 +144,7 @@ namespace WireGraphik
             return matrix;
         }
 
-        public static Matrix Totate3DMatrixX(float phi)
+        public static Matrix Totate3DMatrixX(double phi)
         {
             Matrix matrix = new Matrix();
             matrix[0, 0] = 1;
@@ -152,7 +156,7 @@ namespace WireGraphik
             return matrix;
         }
 
-        public static Matrix Totate3DMatrixY(float phi)
+        public static Matrix Totate3DMatrixY(double phi)
         {
             Matrix matrix = new Matrix();
             matrix[0, 0] = Math.Cos(phi);
@@ -164,7 +168,7 @@ namespace WireGraphik
             return matrix;
         }
 
-        public static Matrix Totate3DMatrixZ(float phi)
+        public static Matrix Totate3DMatrixZ(double phi)
         {
             Matrix matrix = new Matrix();
             matrix[0, 0] = Math.Cos(phi);
@@ -179,11 +183,15 @@ namespace WireGraphik
         public static Matrix ProectionMatrix()
         {
             Matrix matrix = new Matrix();
+
             matrix[0, 0] = 1;
             matrix[1, 1] = 1;
             matrix[2, 0] = -Math.Sqrt(2) / 4;
             matrix[2, 1] = -Math.Sqrt(2) / 4;
             matrix[3, 3] = 1;
+    
+
+
             return matrix;
         }
 
@@ -199,13 +207,36 @@ namespace WireGraphik
 
         }
 
-        public static Matrix ScaleMatrix(float x, float y, float z)
+        public static Matrix ScaleMatrix(double x, double y, double z)
         {
             Matrix matrix = new Matrix();
             matrix[0, 0] = x;
             matrix[1, 1] = y;
             matrix[2, 2] = z;
             matrix[3, 3] = 1;
+
+            return matrix;
+        }
+
+        public static Matrix operator |(Matrix a, Matrix b)
+        {
+            Matrix matrix = new();
+
+            for(int i = 0; i < a.Height; i++)
+            {
+                for(int j = 0; j < a.Width; j++)
+                {
+                    matrix[i, j] = a[i, j];
+                }
+            }
+
+            for (int i = 0; i < a.Height; i++)
+            {
+                for (int j = a.Width; j < a.Width + b.Width; j++)
+                {
+                    matrix[i, j] = b[i, j - a.Width];
+                }
+            }
 
             return matrix;
         }
@@ -287,14 +318,14 @@ namespace WireGraphik
             return new Point((b * (Matrix)a));
         }
 
-        public static Point operator *(Point a, float b)
+        public static Point operator *(Point a, double b)
         {
-            Point point = new Point((Matrix)a * b);
+            Point point = new((Matrix)a * b);
             point[0, 3] = a.H;
             return point;
         }
 
-        public static Point operator *(float b, Point a)
+        public static Point operator *(double b, Point a)
         {
             return a * b;
         }
@@ -305,6 +336,33 @@ namespace WireGraphik
             point[0, 3] = a.H;
             return  point;
         }
+
+        public static Point CrossLines(Point a1, Point a2, Point a3, Point a4)
+        {
+            double x = ((a1.X * a2.Y - a1.Y * a2.X) * (a3.X - a4.X) - (a1.X - a2.X) * (a3.X * a4.Y - a3.Y * a4.X)) /
+                       ((a1.X - a2.X) * (a3.Y - a4.Y) - (a1.Y - a2.Y) * (a3.X - a4.X));
+
+            double y = ((a1.X * a2.Y - a1.Y * a2.X) * (a3.Y - a4.Y) - (a1.Y - a2.Y) * (a3.X * a4.Y - a3.Y * a4.X)) /
+                       ((a1.X - a2.X) * (a3.Y - a4.Y) - (a1.Y - a2.Y) * (a3.X - a4.X));
+
+            return new Point(x,y,0);
+        }
+
+        public static Point CrossSegment(Point a1, Point a2, Point a3, Point a4)
+        {
+            Point crossLinePoint = CrossLines(a1,a2,a3,a4);
+
+            if ( Math.Max(Math.Min(a1.X, a2.X),  Math.Min(a3.X, a4.X)) < crossLinePoint.X &&
+                 crossLinePoint.X < Math.Min(Math.Max(a1.X, a2.X), Math.Max(a3.X, a4.X)) &&
+                 Math.Max(Math.Min(a1.Y, a2.Y), Math.Min(a3.Y, a4.Y)) < crossLinePoint.Y &&
+                 crossLinePoint.Y < Math.Min(Math.Max(a1.Y, a2.Y), Math.Max(a3.Y, a4.Y)))
+            {
+                return crossLinePoint;
+            }
+
+            return null;
+        }
+
     }
 
 }
