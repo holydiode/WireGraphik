@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WireGraphik", "WireGraphik\WireGraphik.csproj", "{E9D7BFA5-F152-4117-9692-889A240099DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WireGraphik", "WireGraphik\WireGraphik.csproj", "{E9D7BFA5-F152-4117-9692-889A240099DB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3dGraohic", "3dGraohic\3dGraohic.csproj", "{4DA4DA54-DB8A-4B3F-B9BB-6F056A40FF98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{E9D7BFA5-F152-4117-9692-889A240099DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9D7BFA5-F152-4117-9692-889A240099DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9D7BFA5-F152-4117-9692-889A240099DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DA4DA54-DB8A-4B3F-B9BB-6F056A40FF98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DA4DA54-DB8A-4B3F-B9BB-6F056A40FF98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DA4DA54-DB8A-4B3F-B9BB-6F056A40FF98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DA4DA54-DB8A-4B3F-B9BB-6F056A40FF98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

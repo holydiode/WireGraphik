@@ -60,31 +60,9 @@ namespace WireGraphik
                     front_oligon.Add(Polygons[i]);
                 }
             }
-            Console.WriteLine(front_oligon.ToArray().Length);
             ConvexBody body = new(front_oligon.ToArray()) {_bufferId = _bufferId, _verticeId = _verticeId};
             return body;
         }
-
-        public DrawObject HideOverdrawLines(ConvexBody front_body)
-        {
-            DrawObject body = ToProjection() as DrawObject;
-            for (int wert_index = 0; wert_index < body.Points.Count - 1; wert_index += 2)
-            {
-                List<Point> crossPoints = new();
-
-                foreach (Polygon polygon in front_body.Polygons)
-                {
-                    crossPoints = polygon.GetOverdrawLinePoint(body.Points[wert_index], body.Points[wert_index + 1]);
-                }
-                if(crossPoints.Count > 1)
-                {
-                    body.Points.InsertRange(wert_index, crossPoints);
-                    wert_index--;
-                }
-            }
-            return body;
-        }
-
         public override IGraphicObject ProtejectionTransform()
         {
             IGraphicObject proectedObject = GetConvexBodyWithHide().Clone() as DrawObject;
